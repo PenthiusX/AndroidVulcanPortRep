@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.4.3)
 
-project(tutorial06_texture)
+project(texturing_test)
 
 # build native_app_glue as a static lib
 add_library(native_glue STATIC
