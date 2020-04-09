@@ -2,28 +2,34 @@ cmake_minimum_required(VERSION 3.4.3)
 
 project(texturing_test)
 
+
 # build native_app_glue as a static lib
-add_library(native_glue STATIC
-    ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c)
+add_library(native_glue STATIC ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c)
 
 # build Vulkan app
 set(SRC_DIR ${CMAKE_SOURCE_DIR})
-get_filename_component(REPO_ROOT_DIR
-   ${CMAKE_SOURCE_DIR}/../../../../..  ABSOLUTE)
+get_filename_component(REPO_ROOT_DIR ${CMAKE_SOURCE_DIR}/../../../../..  ABSOLUTE)
 set(COMMON_DIR ${REPO_ROOT_DIR}/common)
 set(THIRD_PARTY_DIR ${REPO_ROOT_DIR}/third_party)
 
+#add GLM math library
+set(GLM_DIR ${REPO_ROOT_DIR}/vk_Meshlet/glm)
+set(GLMGLM_DIR ${REPO_ROOT_DIR}/vk_Meshlet/glm/glm)
+
 add_library(vktuts SHARED
-   ${SRC_DIR}/VulkanMain.cpp
-   ${SRC_DIR}/AndroidMain.cpp
-   ${SRC_DIR}/CreateShaderModule.cpp
-   ${COMMON_DIR}/vulkan_wrapper/vulkan_wrapper.cpp)
+        ${SRC_DIR}/VulkanMain.cpp
+        ${SRC_DIR}/AndroidMain.cpp
+        ${SRC_DIR}/CreateShaderModule.cpp
+        ${COMMON_DIR}/vulkan_wrapper/vulkan_wrapper.cpp)
+
 
 target_include_directories(vktuts PRIVATE
    ${COMMON_DIR}/vulkan_wrapper
    ${COMMON_DIR}/src
    ${THIRD_PARTY_DIR}
-   ${ANDROID_NDK}/sources/android/native_app_glue)
+   ${ANDROID_NDK}/sources/android/native_app_glue
+   ${GLM_DIR}
+   ${GLMGLM_DIR})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} \
        -std=c++11 -Werror -Wno-unused-variable \
