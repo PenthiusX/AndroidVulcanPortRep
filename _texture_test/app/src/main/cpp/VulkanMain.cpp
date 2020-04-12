@@ -1026,7 +1026,7 @@ bool InitVulkan(android_app* app) {
   };
 
   // create a device
-  CreateVulkanDevice(app->window, &appInfo);
+  CreateVulkanDevice(app->window, &appInfo);//window creation
 
   CreateSwapChain();
 

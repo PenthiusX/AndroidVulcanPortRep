@@ -82,11 +82,15 @@ struct SwapChainSupportDetails {
 
 class HelloTriangleApplication {
 public:
-    void run() {
-        initWindow();
+    void run(android_app* app) {
+        initWindow(app);
         initVulkan();
-        mainLoop();
+//        mainLoop();
         cleanup();
+    }
+
+    void render(){
+        drawFrame();
     }
 
 private:
@@ -122,7 +126,7 @@ private:
     std::vector<VkFence> imagesInFlight;
     size_t currentFrame = 0;
 
-    void initWindow() {
+    void initWindow() {// Change!!!! Aditya
 //        glfwInit();
 //        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 //        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
@@ -133,6 +137,9 @@ private:
     android_app* androidAppCtx = nullptr;
     void initWindow(android_app* app){
         androidAppCtx = app;
+        if (!InitVulkan()) {
+            throw std::runtime_error("Vulkan is unavailable, install vulkan and re-start");
+        }
     }
 
     void initVulkan() {
@@ -151,14 +158,13 @@ private:
         createSyncObjects();//13
     }
 
-    void mainLoop() {
-        while (!glfwWindowShouldClose(window)) {
-            glfwPollEvents();
-            drawFrame();
-        }
-
-        vkDeviceWaitIdle(device);
-    }
+//    void mainLoop() {// Change!!!! Aditya
+//        while (!glfwWindowShouldClose(window)) {
+//            glfwPollEvents();
+//            drawFrame();
+//        }
+//        vkDeviceWaitIdle(device);
+//    }
 
     void cleanup() {
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
@@ -191,7 +197,7 @@ private:
         vkDestroySurfaceKHR(instance, surface, nullptr);
         vkDestroyInstance(instance, nullptr);
 
-//        glfwDestroyWindow(window);
+//        glfwDestroyWindow(window);// Change!!!! Aditya
 //        glfwTerminate();
     }
 
@@ -253,10 +259,10 @@ private:
         }
     }
 
-    void createSurface() {
-        if (glfwCreateWindowSurface(instance, window, nullptr, &surface) != VK_SUCCESS) {//points of divergence//windowing
-            throw std::runtime_error("failed to create window surface!");
-        }
+    void createSurface() {// Change!!!! Aditya
+//        if (glfwCreateWindowSurface(instance, window, nullptr, &surface) != VK_SUCCESS) {//points of divergence//windowing
+//            throw std::runtime_error("failed to create window surface!");
+//        }
     }
 
     void pickPhysicalDevice() {
@@ -479,7 +485,7 @@ private:
                         .pName = "main",
                 }};
 
-        //Replaced
+        // Change!!!! Aditya
 //        VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
 //        VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);
 //
@@ -584,8 +590,10 @@ private:
             throw std::runtime_error("failed to create graphics pipeline!");
         }
 
-        vkDestroyShaderModule(device, fragShaderModule, nullptr);
-        vkDestroyShaderModule(device, vertShaderModule, nullptr);
+//        vkDestroyShaderModule(device, fragShaderModule, nullptr);
+//        vkDestroyShaderModule(device, vertShaderModule, nullptr);
+        vkDestroyShaderModule(device, fragmentShader, nullptr);
+        vkDestroyShaderModule(device, vertexShader, nullptr);
     }
 
     void createFramebuffers() {
@@ -741,19 +749,19 @@ private:
         currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
     }
 
-    VkShaderModule createShaderModule(const std::vector<char>& code) {
-        VkShaderModuleCreateInfo createInfo = {};
-        createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-        createInfo.codeSize = code.size();
-        createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
-
-        VkShaderModule shaderModule;
-        if (vkCreateShaderModule(device, &createInfo, nullptr, &shaderModule) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create shader module!");
-        }
-
-        return shaderModule;
-    }
+//    VkShaderModule createShaderModule(const std::vector<char>& code) { // Change!!!! Aditya
+//        VkShaderModuleCreateInfo createInfo = {};
+//        createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+//        createInfo.codeSize = code.size();
+//        createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
+//
+//        VkShaderModule shaderModule;
+//        if (vkCreateShaderModule(device, &createInfo, nullptr, &shaderModule) != VK_SUCCESS) {
+//            throw std::runtime_error("failed to create shader module!");
+//        }
+//
+//        return shaderModule;
+//    }
 
     VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) {
         for (const auto& availableFormat : availableFormats) {
@@ -875,17 +883,21 @@ private:
         return indices;
     }
 
-    std::vector<const char*> getRequiredExtensions() {
-        uint32_t glfwExtensionCount = 0;
-        const char** glfwExtensions;
-        glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+    std::vector<const char*> getRequiredExtensions() { // Change!!!! Aditya
+//        uint32_t glfwExtensionCount = 0;
+//        const char** glfwExtensions;
+//        glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+//
+//        std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
+        std::vector<const char*> extensions;
+//
+//        if (enableValidationLayers) {
+//            extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+//        }
 
-        std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
-
-        if (enableValidationLayers) {
-            extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-        }
-
+        extensions.push_back("VK_KHR_surface");
+        extensions.push_back("VK_KHR_android_surface");
+        extensions.push_back("VK_KHR_swapchain");
         return extensions;
     }
 
@@ -939,7 +951,7 @@ private:
     }
 };
 
-//int main() {
+//int main() { // Change!!!! Aditya
 //    HelloTriangleApplication app;
 //
 //    try {
