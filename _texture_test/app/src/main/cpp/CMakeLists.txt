@@ -28,7 +28,7 @@ target_include_directories(vktuts PRIVATE
    ${COMMON_DIR}/src
    ${THIRD_PARTY_DIR}
    ${ANDROID_NDK}/sources/android/native_app_glue
-   ${GLM_DIR}
+   ${GLM_DIR}#add glm path to the link of targeted libraries
    ${GLMGLM_DIR})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} \

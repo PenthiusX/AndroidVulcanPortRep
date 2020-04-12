@@ -16,6 +16,7 @@
 #include "VulkanMain.hpp"
 #include <glm/glm.hpp>
 
+//#include "windowsVulcanToConvert.h"
 
 // Process the next main command.
 void handle_cmd(android_app* app, int32_t cmd) {
@@ -52,7 +53,8 @@ void android_main(struct android_app* app) {
 
     // render if vulkan is ready
     if (IsVulkanReady()) {
-      VulkanDrawFrame();
+        VulkanDrawFrame();
+//        drawFrame();
     }
   } while (app->destroyRequested == 0);
 }

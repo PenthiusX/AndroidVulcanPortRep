@@ -54,7 +54,7 @@ void terminate(void);
 void handle_cmd(android_app* app, int32_t cmd);
 
 // typical Android NativeActivity entry function
-void android_main(struct android_app* app) {
+void android_main(struct android_app* app) {//Main entry point
   app->onAppCmd = handle_cmd;
 
   int events;
@@ -69,12 +69,12 @@ void android_main(struct android_app* app) {
 
 bool initialize(android_app* app) {
   // Load Android vulkan and retrieve vulkan API function pointers
-  if (!InitVulkan()) {
+  if (!InitVulkan()) { //-----------------------> 1
     LOGE("Vulkan is unavailable, install vulkan and re-start");
     return false;
   }
 
-  VkApplicationInfo appInfo = {
+  VkApplicationInfo appInfo = { //-----------------------> 2
       .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
       .pNext = nullptr,
       .apiVersion = VK_MAKE_VERSION(1, 0, 0),
@@ -86,11 +86,11 @@ bool initialize(android_app* app) {
 
   // prepare debug and layer objects
   LayerAndExtensions layerAndExt;
-  layerAndExt.AddInstanceExt(layerAndExt.GetDbgExtName());
+//  layerAndExt.AddInstanceExt(layerAndExt.GetDbgExtName());
 
   // Create Vulkan instance, requesting all enabled layers / extensions
   // available on the system
-  VkInstanceCreateInfo instanceCreateInfo{
+  VkInstanceCreateInfo instanceCreateInfo {
       .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
       .pNext = nullptr,
       .pApplicationInfo = &appInfo,
