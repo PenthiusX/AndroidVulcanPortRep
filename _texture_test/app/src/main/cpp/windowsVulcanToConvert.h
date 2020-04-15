@@ -34,16 +34,18 @@ const std::vector<const char*> validationLayers = {
         "VK_LAYER_KHRONOS_validation"
 };
 
-std::vector<const char*> deviceExtensions; //= {
-//        VK_KHR_SWAPCHAIN_EXTENSION_NAME
-//};
+std::vector<const char*> deviceExtensions = {
+        VK_KHR_SWAPCHAIN_EXTENSION_NAME
+};
 
 #ifdef NDEBUG
 const bool enableValidationLayers = false;
 #else
 const bool enableValidationLayers = false;
 #endif
-
+//--------------------------------------------------------------
+//--------------------------------------------------------------
+//--------------------------------------------------------------
 VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger) {
     auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
     if (func != nullptr) {
@@ -78,8 +80,10 @@ struct SwapChainSupportDetails {
     std::vector<VkSurfaceFormatKHR> formats;
     std::vector<VkPresentModeKHR> presentModes;
 };
-
-class HelloTriangleApplication {
+//--------------------------------------------------------------
+//--------------------------------------------------------------
+//--------------------------------------------------------------
+class HelloTriangleApplication {//this is bad design , needs to have cpp to enforce better scope and context resolution
 public:
     void run(android_app* app) {
         initWindow(app);
@@ -92,10 +96,10 @@ public:
         drawFrame();
     }
 
-    VkSurfaceKHR surface;
+
 private:
 //    GLFWwindow* window;
-
+    VkSurfaceKHR surface;
     VkInstance instance;
     VkDebugUtilsMessengerEXT debugMessenger;
 
@@ -124,14 +128,18 @@ private:
     std::vector<VkFence> inFlightFences;
     std::vector<VkFence> imagesInFlight;
     size_t currentFrame = 0;
-
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
     void initWindow() {// Change!!!! Aditya
 //        glfwInit();
 //        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 //        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 //        window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
     }
-
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
     // Android Native App pointer...
     android_app* androidAppCtx = nullptr;
     void initWindow(android_app* app){
@@ -140,7 +148,9 @@ private:
             throw std::runtime_error("Vulkan is unavailable, install vulkan and re-start");
         }
     }
-
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
     void initVulkan() {
         createInstance();//1
         setupDebugMessenger();//2
@@ -156,7 +166,9 @@ private:
         createCommandBuffers();//12
         createSyncObjects();//13
     }
-
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
 //    void mainLoop() {// Change!!!! Aditya
 //        while (!glfwWindowShouldClose(window)) {
 //            glfwPollEvents();
@@ -164,7 +176,9 @@ private:
 //        }
 //        vkDeviceWaitIdle(device);
 //    }
-
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
     void cleanup() {
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
             vkDestroySemaphore(device, renderFinishedSemaphores[i], nullptr);
@@ -199,7 +213,9 @@ private:
 //        glfwDestroyWindow(window);// Change!!!! Aditya
 //        glfwTerminate();
     }
-
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
     void createInstance() {
         if (enableValidationLayers && !checkValidationLayerSupport()) {
             throw std::runtime_error("validation layers requested, but not available!");
@@ -230,29 +246,17 @@ private:
 
             populateDebugMessengerCreateInfo(debugCreateInfo);
             createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&debugCreateInfo;
-        }
-        else {
+        }else{
             createInfo.enabledLayerCount = 0;
-            createInfo.pNext = nullptr;
-        }
+            createInfo.pNext = nullptr;}
 
-        if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) {
+        if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) {//-------------------> CreateInstance X
             throw std::runtime_error("failed to create instance!");
         }
-
-        //-----------------------Change!!! Aditya----------------------------
-        VkAndroidSurfaceCreateInfoKHR androidSurfaceInfo{
-                .sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR,
-                .pNext = nullptr,
-                .flags = 0,
-                .window = androidAppCtx->window};
-
-        if(vkCreateAndroidSurfaceKHR(instance, &androidSurfaceInfo, nullptr,&surface)){
-            throw std::runtime_error("failed to create vkCreateAndroidSurfaceKHR!");
-        }
-        //--------------------------------------------------------------
     }
-
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
     void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) {
         createInfo = {};
         createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
@@ -260,10 +264,11 @@ private:
         createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
         createInfo.pfnUserCallback = debugCallback;
     }
-
-    void setupDebugMessenger() {
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
+    void setupDebugMessenger() {//Redundant is diabled on android causes errors
         if (!enableValidationLayers) return;
-
         VkDebugUtilsMessengerCreateInfoEXT createInfo;
         populateDebugMessengerCreateInfo(createInfo);
 
@@ -271,13 +276,28 @@ private:
             throw std::runtime_error("failed to set up debug messenger!");
         }
     }
-
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
     void createSurface() {// Change!!!! Aditya
 //        if (glfwCreateWindowSurface(instance, window, nullptr, &surface) != VK_SUCCESS) {//points of divergence//windowing
 //            throw std::runtime_error("failed to create window surface!");
 //        }
-    }
+        //-----------------------Change!!! Aditya----------------------------
+        VkAndroidSurfaceCreateInfoKHR androidSurfaceInfo{
+                .sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR,
+                .pNext = nullptr,
+                .flags = 0,
+                .window = androidAppCtx->window};//this the android app passed into this class on Initialisation
 
+        if(vkCreateAndroidSurfaceKHR(instance, &androidSurfaceInfo, nullptr,&surface)){
+            throw std::runtime_error("failed to create vkCreateAndroidSurfaceKHR!");
+        }
+
+    }
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
     void pickPhysicalDevice() {
         uint32_t deviceCount = 0;
         vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
@@ -300,7 +320,9 @@ private:
             throw std::runtime_error("failed to find a suitable GPU!");
         }
     }
-
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
     void createLogicalDevice() {
         QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
 
@@ -345,7 +367,9 @@ private:
         vkGetDeviceQueue(device, indices.graphicsFamily, 0, &graphicsQueue);
         vkGetDeviceQueue(device, indices.presentFamily, 0, &presentQueue);
     }
-
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
     void createSwapChain() {
         SwapChainSupportDetails swapChainSupport = querySwapChainSupport(physicalDevice);
 
@@ -399,7 +423,9 @@ private:
         swapChainImageFormat = surfaceFormat.format;
         swapChainExtent = extent;
     }
-
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
     void createImageViews() {
         swapChainImageViews.resize(swapChainImages.size());
 
@@ -424,7 +450,9 @@ private:
             }
         }
     }
-
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
     void createRenderPass() {
         VkAttachmentDescription colorAttachment = {};
         colorAttachment.format = swapChainImageFormat;
@@ -466,7 +494,9 @@ private:
             throw std::runtime_error("failed to create render pass!");
         }
     }
-
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
     void createGraphicsPipeline() {
 //        auto vertShaderCode = readFile("shaders/vert.spv");//point of divergence//Shader compilation
 //        auto fragShaderCode = readFile("shaders/frag.spv");
@@ -608,7 +638,9 @@ private:
         vkDestroyShaderModule(device, fragmentShader, nullptr);
         vkDestroyShaderModule(device, vertexShader, nullptr);
     }
-
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
     void createFramebuffers() {
         swapChainFramebuffers.resize(swapChainImageViews.size());
 
@@ -631,7 +663,9 @@ private:
             }
         }
     }
-
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
     void createCommandPool() {
         QueueFamilyIndices queueFamilyIndices = findQueueFamilies(physicalDevice);
 
@@ -689,7 +723,9 @@ private:
             }
         }
     }
-
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
     void createSyncObjects() {
         imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
         renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
@@ -711,7 +747,9 @@ private:
             }
         }
     }
-
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
     void drawFrame() {
         vkWaitForFences(device, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 
@@ -775,7 +813,9 @@ private:
 //
 //        return shaderModule;
 //    }
-
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
     VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) {
         for (const auto& availableFormat : availableFormats) {
             if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
@@ -785,7 +825,9 @@ private:
 
         return availableFormats[0];
     }
-
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
     VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) {
         for (const auto& availablePresentMode : availablePresentModes) {
             if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
@@ -795,7 +837,9 @@ private:
 
         return VK_PRESENT_MODE_FIFO_KHR;
     }
-
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
     VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) {
         if (capabilities.currentExtent.width != UINT32_MAX) {
             return capabilities.currentExtent;
@@ -809,7 +853,9 @@ private:
             return actualExtent;
         }
     }
-
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
     SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device) {
         SwapChainSupportDetails details;
 
@@ -833,7 +879,9 @@ private:
 
         return details;
     }
-
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
     bool isDeviceSuitable(VkPhysicalDevice device) {
         QueueFamilyIndices indices = findQueueFamilies(device);
 
@@ -847,13 +895,15 @@ private:
 
         return indices.isComplete() && extensionsSupported && swapChainAdequate;
     }
-
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
     bool checkDeviceExtensionSupport(VkPhysicalDevice device) {
         uint32_t extensionCount;
-        vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
+        vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);//------------------->EnumerateDeviceExtensionProperties
 
         std::vector<VkExtensionProperties> availableExtensions(extensionCount);
-        vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
+        vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());//--------------->EnumerateDeviceExtensionProperties
 
         std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
 
@@ -863,58 +913,59 @@ private:
 
         return requiredExtensions.empty();
     }
-
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
     QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device) {
         QueueFamilyIndices indices;
 
         uint32_t queueFamilyCount = 0;
-        vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
+        vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);//---------->GetPhysicalDeviceQueueFamilyProperties
 
         std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
-        vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
+        vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());//------->GetPhysicalDeviceQueueFamilyProperties
 
         int i = 0;
         for (const auto& queueFamily : queueFamilies) {
             if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
                 indices.graphicsFamily = i;
             }
-
             VkBool32 presentSupport = false;
-            vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &presentSupport);
+
+            vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &presentSupport);//---->PhysicalDeviceSurfaceSupport
 
             if (presentSupport) {
                 indices.presentFamily = i;
             }
-
             if (indices.isComplete()) {
                 break;
             }
-
             i++;
         }
-
         return indices;
     }
-
-    std::vector<const char*> getRequiredExtensions() { // Change!!!! Aditya
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
+    std::vector<const char*> getRequiredExtensions() {
+// Change!!!! Aditya
 //        uint32_t glfwExtensionCount = 0;
 //        const char** glfwExtensions;
 //        glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-//
 //        std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
-        std::vector<const char*> extensions;
-//
-//        if (enableValidationLayers) {
-//            extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-//        }
 
+        std::vector<const char*> extensions;
+        if (enableValidationLayers) {//Rendundant
+            extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+        }
+        //Hard coded extension for the Android os,these are used during creating a vulcan Instance
         extensions.push_back("VK_KHR_surface");
         extensions.push_back("VK_KHR_android_surface");
-        deviceExtensions.push_back("VK_KHR_swapchain");
+//        deviceExtensions.push_back("VK_KHR_swapchain");//this is default swapchain being included above,
         return extensions;
     }
 
-    bool checkValidationLayerSupport() {
+    bool checkValidationLayerSupport() {//Redundant on android
         uint32_t layerCount;
         vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
 
@@ -963,6 +1014,9 @@ private:
         return VK_FALSE;
     }
 };
+//--------------------------------------------------------------
+//--------------------------------------------------------------
+//--------------------------------------------------------------
 
 //int main() { // Change!!!! Aditya
 //    HelloTriangleApplication app;
