@@ -47,8 +47,6 @@ void android_main(struct android_app* app) {
   int events;
   android_poll_source* source;
 
-
-
   // Main loop
   do {
     if (ALooper_pollAll(IsVulkanReady() ? 1 : 0, nullptr,

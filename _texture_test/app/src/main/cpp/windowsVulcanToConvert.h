@@ -34,14 +34,14 @@ const std::vector<const char*> validationLayers = {
         "VK_LAYER_KHRONOS_validation"
 };
 
-const std::vector<const char*> deviceExtensions = {
-        VK_KHR_SWAPCHAIN_EXTENSION_NAME
-};
+std::vector<const char*> deviceExtensions; //= {
+//        VK_KHR_SWAPCHAIN_EXTENSION_NAME
+//};
 
 #ifdef NDEBUG
 const bool enableValidationLayers = false;
 #else
-const bool enableValidationLayers = true;
+const bool enableValidationLayers = false;
 #endif
 
 VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger) {
@@ -62,7 +62,6 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT
 }
 
 struct QueueFamilyIndices {
-
     uint32_t graphicsFamily;
     uint32_t presentFamily;
 
@@ -85,7 +84,7 @@ public:
     void run(android_app* app) {
         initWindow(app);
         initVulkan();
-//        mainLoop();
+//        mainLoop(); //Change!!! Aditya
         cleanup();
     }
 
@@ -93,12 +92,12 @@ public:
         drawFrame();
     }
 
+    VkSurfaceKHR surface;
 private:
 //    GLFWwindow* window;
 
     VkInstance instance;
     VkDebugUtilsMessengerEXT debugMessenger;
-    VkSurfaceKHR surface;
 
     VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
     VkDevice device;
@@ -214,6 +213,7 @@ private:
         appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
         appInfo.apiVersion = VK_API_VERSION_1_0;
 
+
         VkInstanceCreateInfo createInfo = {};
         createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
         createInfo.pApplicationInfo = &appInfo;
@@ -222,8 +222,9 @@ private:
         createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
         createInfo.ppEnabledExtensionNames = extensions.data();
 
-        VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
+
         if (enableValidationLayers) {
+            VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
             createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
             createInfo.ppEnabledLayerNames = validationLayers.data();
 
@@ -238,6 +239,18 @@ private:
         if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) {
             throw std::runtime_error("failed to create instance!");
         }
+
+        //-----------------------Change!!! Aditya----------------------------
+        VkAndroidSurfaceCreateInfoKHR androidSurfaceInfo{
+                .sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR,
+                .pNext = nullptr,
+                .flags = 0,
+                .window = androidAppCtx->window};
+
+        if(vkCreateAndroidSurfaceKHR(instance, &androidSurfaceInfo, nullptr,&surface)){
+            throw std::runtime_error("failed to create vkCreateAndroidSurfaceKHR!");
+        }
+        //--------------------------------------------------------------
     }
 
     void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) {
@@ -897,7 +910,7 @@ private:
 
         extensions.push_back("VK_KHR_surface");
         extensions.push_back("VK_KHR_android_surface");
-        extensions.push_back("VK_KHR_swapchain");
+        deviceExtensions.push_back("VK_KHR_swapchain");
         return extensions;
     }
 

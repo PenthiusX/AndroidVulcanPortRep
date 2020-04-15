@@ -129,7 +129,6 @@ void CreateVulkanDevice(ANativeWindow* platformWindow,
 
   instance_extensions.push_back("VK_KHR_surface");
   instance_extensions.push_back("VK_KHR_android_surface");
-
   device_extensions.push_back("VK_KHR_swapchain");
 
   // **********************************************************
@@ -138,13 +137,13 @@ void CreateVulkanDevice(ANativeWindow* platformWindow,
       .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
       .pNext = nullptr,
       .pApplicationInfo = appInfo,
-      .enabledExtensionCount =
-          static_cast<uint32_t>(instance_extensions.size()),
+      .enabledExtensionCount = static_cast<uint32_t>(instance_extensions.size()),
       .ppEnabledExtensionNames = instance_extensions.data(),
       .enabledLayerCount = 0,
       .ppEnabledLayerNames = nullptr,
   };
   CALL_VK(vkCreateInstance(&instanceCreateInfo, nullptr, &device.instance_));
+
   VkAndroidSurfaceCreateInfoKHR createInfo{
       .sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR,
       .pNext = nullptr,
@@ -989,7 +988,7 @@ VkResult CreateDescriptorSet(void) {
     texDsts[idx].imageLayout = VK_IMAGE_LAYOUT_GENERAL;
   }
 
-  VkWriteDescriptorSet writeDst{
+  VkWriteDescriptorSet writeDst {
       .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
       .pNext = nullptr,
       .dstSet = gfxPipeline.descSet_,
@@ -1021,8 +1020,8 @@ bool InitVulkan(android_app* app) {
       .apiVersion = VK_MAKE_VERSION(1, 0, 0),
       .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
       .engineVersion = VK_MAKE_VERSION(1, 0, 0),
-      .pApplicationName = "tutorial05_triangle_window",
-      .pEngineName = "tutorial",
+      .pApplicationName = "triangle_window",
+      .pEngineName = "TestEngine",
   };
 
   // create a device
