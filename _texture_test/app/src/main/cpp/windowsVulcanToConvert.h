@@ -152,14 +152,14 @@ private:
     //--------------------------------------------------------------
     //--------------------------------------------------------------
     void initVulkan() {
-        createInstance();//1
-        setupDebugMessenger();//2
-        createSurface();//3
-        pickPhysicalDevice();//4
-        createLogicalDevice();//5
-        createSwapChain();//6
-        createImageViews();//7
-        createRenderPass();//8
+        createInstance();//1 Done
+        setupDebugMessenger();//2 Redundant
+        createSurface();//3 Done
+        pickPhysicalDevice();//4 Done
+        createLogicalDevice();//5 Done
+        createSwapChain();//6 Done
+        createImageViews();//7 Done
+        createRenderPass();//8 Done
         createGraphicsPipeline();//9
         createFramebuffers();//10
         createCommandPool();//11
@@ -293,12 +293,11 @@ private:
         if(vkCreateAndroidSurfaceKHR(instance, &androidSurfaceInfo, nullptr,&surface)){
             throw std::runtime_error("failed to create vkCreateAndroidSurfaceKHR!");
         }
-
     }
     //--------------------------------------------------------------
     //--------------------------------------------------------------
     //--------------------------------------------------------------
-    void pickPhysicalDevice() {
+    void pickPhysicalDevice(){
         uint32_t deviceCount = 0;
         vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
 

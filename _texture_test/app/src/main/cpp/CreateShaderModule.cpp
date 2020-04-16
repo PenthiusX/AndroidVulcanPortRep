@@ -47,8 +47,7 @@ VkResult buildShaderFromFile(android_app* appInfo, const char* filePath,
                              VkShaderStageFlagBits type, VkDevice vkDevice,
                              VkShaderModule* shaderOut) {
   // read file from Assets
-  AAsset* file = AAssetManager_open(appInfo->activity->assetManager, filePath,
-                                    AASSET_MODE_BUFFER);
+  AAsset* file = AAssetManager_open(appInfo->activity->assetManager, filePath,AASSET_MODE_BUFFER);
   size_t glslShaderLen = AAsset_getLength(file);
   std::vector<char> glslShader;
   glslShader.resize(glslShaderLen);
