@@ -38,7 +38,9 @@ void android_main(struct android_app* app) {
   do {
     if (ALooper_pollAll(IsVulkanReady() ? 1 : 0, nullptr,
                         &events, (void**)&source) >= 0) {
-      if (source != NULL) source->process(app, source);
+      if (source != NULL) {
+          source->process(app, source);
+      }
     }
 
     // render if vulkan is ready

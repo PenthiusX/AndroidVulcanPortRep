@@ -160,8 +160,8 @@ private:
         createSwapChain();//6 Done
         createImageViews();//7 Done
         createRenderPass();//8 Done
-        createGraphicsPipeline();//9
-        createFramebuffers();//10
+        createGraphicsPipeline();//9 Done
+        createFramebuffers();//10 Done
         createCommandPool();//11
         createCommandBuffers();//12
         createSyncObjects();//13
@@ -500,10 +500,10 @@ private:
 //        auto vertShaderCode = readFile("shaders/vert.spv");//point of divergence//Shader compilation
 //        auto fragShaderCode = readFile("shaders/frag.spv");
         VkShaderModule vertexShader, fragmentShader;
-        buildShaderFromFile(androidAppCtx, "shaders/tri.vert",
+        buildShaderFromFile(androidAppCtx, "shaders/09_shader_base.vert",
                             VK_SHADER_STAGE_VERTEX_BIT, device,
                             &vertexShader);
-        buildShaderFromFile(androidAppCtx, "shaders/tri.frag",
+        buildShaderFromFile(androidAppCtx, "shaders/09_shader_base.frag",
                             VK_SHADER_STAGE_FRAGMENT_BIT, device,
                             &fragmentShader);
         // Specify vertex and fragment shader stages
