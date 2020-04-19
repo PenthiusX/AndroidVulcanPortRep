@@ -43,7 +43,9 @@ static const char* kTAG = "Vulkan-Tutorial06";
 // A macro to check value is VK_SUCCESS
 // Used also for non-vulkan functions but return VK_SUCCESS
 #define VK_CHECK(x) CALL_VK(x)
-
+//--------------------------------------------------------------
+//--------------------------------------------------------------
+//--------------------------------------------------------------
 // Global Variables ...
 struct VulkanDeviceInfo {
   bool initialized_;
@@ -88,7 +90,9 @@ const char* texFiles[TUTORIAL_TEXTURE_COUNT] = {
     "sample_tex.png",
 };
 struct texture_object textures[TUTORIAL_TEXTURE_COUNT];
-
+//--------------------------------------------------------------
+//--------------------------------------------------------------
+//--------------------------------------------------------------
 struct VulkanBufferInfo {
   VkBuffer vertexBuf_;
 };
@@ -113,14 +117,18 @@ struct VulkanRenderInfo {
   VkFence fence_;
 };
 VulkanRenderInfo render;
-
+//--------------------------------------------------------------
+//--------------------------------------------------------------
+//--------------------------------------------------------------
 // Android Native App pointer...
 android_app* androidAppCtx = nullptr;
 void setImageLayout(VkCommandBuffer cmdBuffer, VkImage image,
                     VkImageLayout oldImageLayout, VkImageLayout newImageLayout,
                     VkPipelineStageFlags srcStages,
                     VkPipelineStageFlags destStages);
-
+//--------------------------------------------------------------
+//--------------------------------------------------------------
+//--------------------------------------------------------------
 // Create vulkan device
 void CreateVulkanDevice(ANativeWindow* platformWindow,
                         VkApplicationInfo* appInfo) {
@@ -213,7 +221,9 @@ void CreateVulkanDevice(ANativeWindow* platformWindow,
                          &device.device_));
   vkGetDeviceQueue(device.device_, 0, 0, &device.queue_);
 }
-
+//--------------------------------------------------------------
+//--------------------------------------------------------------
+//--------------------------------------------------------------
 void CreateSwapChain(void) {
   LOGI("->createSwapChain");
   memset(&swapchain, 0, sizeof(swapchain));
@@ -274,7 +284,9 @@ void CreateSwapChain(void) {
   delete[] formats;
   LOGI("<-createSwapChain");
 }
-
+//--------------------------------------------------------------
+//--------------------------------------------------------------
+//--------------------------------------------------------------
 void DeleteSwapChain(void) {
   for (int i = 0; i < swapchain.swapchainLength_; i++) {
     vkDestroyFramebuffer(device.device_, swapchain.framebuffers_[i], nullptr);
@@ -286,7 +298,9 @@ void DeleteSwapChain(void) {
 
   vkDestroySwapchainKHR(device.device_, swapchain.swapchain_, nullptr);
 }
-
+//--------------------------------------------------------------
+//--------------------------------------------------------------
+//--------------------------------------------------------------
 void CreateFrameBuffers(VkRenderPass& renderPass,
                         VkImageView depthView = VK_NULL_HANDLE) {
   // query display attachment to swapchain
@@ -350,7 +364,9 @@ void CreateFrameBuffers(VkRenderPass& renderPass,
                                 &swapchain.framebuffers_[i]));
   }
 }
-
+//--------------------------------------------------------------
+//--------------------------------------------------------------
+//--------------------------------------------------------------
 // A help function to map required memory property into a VK memory type
 // memory type is an index into the array of 32 entries; or the bit index
 // for the memory type ( each BIT of an 32 bit integer is a type ).
@@ -372,7 +388,9 @@ VkResult AllocateMemoryTypeFromProperties(uint32_t typeBits,
   // No memory types matched, return failure
   return VK_ERROR_MEMORY_MAP_FAILED;
 }
-
+//--------------------------------------------------------------
+//--------------------------------------------------------------
+//--------------------------------------------------------------
 VkResult LoadTextureFromFile(const char* filePath,
                              struct texture_object* tex_obj,
                              VkImageUsageFlags usage, VkFlags required_props) {
@@ -607,7 +625,9 @@ VkResult LoadTextureFromFile(const char* filePath,
   }
   return VK_SUCCESS;
 }
-
+//--------------------------------------------------------------
+//--------------------------------------------------------------
+//--------------------------------------------------------------
 void CreateTexture(void) {
   for (uint32_t i = 0; i < TUTORIAL_TEXTURE_COUNT; i++) {
     LoadTextureFromFile(texFiles[i], &textures[i], VK_IMAGE_USAGE_SAMPLED_BIT,
@@ -652,7 +672,9 @@ void CreateTexture(void) {
         vkCreateImageView(device.device_, &view, nullptr, &textures[i].view));
   }
 }
-
+//--------------------------------------------------------------
+//--------------------------------------------------------------
+//--------------------------------------------------------------
 // A helper function
 bool MapMemoryTypeToIndex(uint32_t typeBits, VkFlags requirements_mask,
                           uint32_t* typeIndex) {
@@ -672,7 +694,9 @@ bool MapMemoryTypeToIndex(uint32_t typeBits, VkFlags requirements_mask,
   }
   return false;
 }
-
+//--------------------------------------------------------------
+//--------------------------------------------------------------
+//--------------------------------------------------------------
 // Create our vertex buffer
 bool CreateBuffers(void) {
   // Vertex positions
@@ -726,11 +750,15 @@ bool CreateBuffers(void) {
       vkBindBufferMemory(device.device_, buffers.vertexBuf_, deviceMemory, 0));
   return true;
 }
-
+//--------------------------------------------------------------
+//--------------------------------------------------------------
+//--------------------------------------------------------------
 void DeleteBuffers(void) {
   vkDestroyBuffer(device.device_, buffers.vertexBuf_, nullptr);
 }
-
+//--------------------------------------------------------------
+//--------------------------------------------------------------
+//--------------------------------------------------------------
 // Create Graphics Pipeline
 VkResult CreateGraphicsPipeline(void) {
   memset(&gfxPipeline, 0, sizeof(gfxPipeline));
@@ -943,7 +971,9 @@ VkResult CreateGraphicsPipeline(void) {
 
   return pipelineResult;
 }
-
+//--------------------------------------------------------------
+//--------------------------------------------------------------
+//--------------------------------------------------------------
 void DeleteGraphicsPipeline(void) {
   if (gfxPipeline.pipeline_ == VK_NULL_HANDLE) return;
   vkDestroyPipeline(device.device_, gfxPipeline.pipeline_, nullptr);
@@ -953,7 +983,9 @@ void DeleteGraphicsPipeline(void) {
   vkDestroyDescriptorPool(device.device_, gfxPipeline.descPool_, nullptr);
   vkDestroyPipelineLayout(device.device_, gfxPipeline.layout_, nullptr);
 }
-
+//--------------------------------------------------------------
+//--------------------------------------------------------------
+//--------------------------------------------------------------
 // initialize descriptor set
 VkResult CreateDescriptorSet(void) {
   const VkDescriptorPoolSize type_count = {
@@ -1003,6 +1035,9 @@ VkResult CreateDescriptorSet(void) {
   return VK_SUCCESS;
 }
 
+//--------------------------------------------------------------
+//--------------------------------------------------------------
+//--------------------------------------------------------------
 // InitVulkan:
 //   Initialize Vulkan Context when android application window is created
 //   upon return, vulkan is ready to draw frames
@@ -1067,8 +1102,7 @@ bool InitVulkan(android_app* app) {
       .dependencyCount = 0,
       .pDependencies = nullptr,
   };
-  CALL_VK(vkCreateRenderPass(device.device_, &renderPassCreateInfo, nullptr,
-                             &render.renderPass_));
+  CALL_VK(vkCreateRenderPass(device.device_, &renderPassCreateInfo, nullptr,&render.renderPass_));
 
   CreateFrameBuffers(render.renderPass_);
   CreateTexture();
@@ -1195,10 +1229,15 @@ bool InitVulkan(android_app* app) {
   return true;
 }
 
+//--------------------------------------------------------------
+//--------------------------------------------------------------
+//--------------------------------------------------------------
 // IsVulkanReady():
 //    native app poll to see if we are ready to draw...
 bool IsVulkanReady(void) { return device.initialized_; }
-
+//--------------------------------------------------------------
+//--------------------------------------------------------------
+//--------------------------------------------------------------
 void DeleteVulkan() {
   vkFreeCommandBuffers(device.device_, render.cmdPool_, render.cmdBufferLen_,
                        render.cmdBuffer_);
@@ -1216,6 +1255,9 @@ void DeleteVulkan() {
   device.initialized_ = false;
 }
 
+//--------------------------------------------------------------
+//--------------------------------------------------------------
+//--------------------------------------------------------------
 // Draw one frame
 bool VulkanDrawFrame(void) {
   uint32_t nextIndex;
@@ -1257,6 +1299,9 @@ bool VulkanDrawFrame(void) {
   return true;
 }
 
+//--------------------------------------------------------------
+//--------------------------------------------------------------
+//--------------------------------------------------------------
 void setImageLayout(VkCommandBuffer cmdBuffer, VkImage image,
                     VkImageLayout oldImageLayout, VkImageLayout newImageLayout,
                     VkPipelineStageFlags srcStages,
