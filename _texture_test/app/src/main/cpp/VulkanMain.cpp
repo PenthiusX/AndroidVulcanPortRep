@@ -613,8 +613,7 @@ VkResult LoadTextureFromFile(const char* filePath,
       .pSignalSemaphores = nullptr,
   };
   CALL_VK(vkQueueSubmit(device.queue_, 1, &submitInfo, fence) != VK_SUCCESS);
-  CALL_VK(vkWaitForFences(device.device_, 1, &fence, VK_TRUE, 100000000) !=
-          VK_SUCCESS);
+  CALL_VK(vkWaitForFences(device.device_, 1, &fence, VK_TRUE, 100000000) != VK_SUCCESS);
   vkDestroyFence(device.device_, fence, nullptr);
 
   vkFreeCommandBuffers(device.device_, cmdPool, 1, &gfxCmd);
@@ -1058,12 +1057,10 @@ bool InitVulkan(android_app* app) {
       .pApplicationName = "triangle_window",
       .pEngineName = "TestEngine",
   };
-
+    // -----------------------------------------------------------------
   // create a device
-  CreateVulkanDevice(app->window, &appInfo);//window creation
-
-  CreateSwapChain();
-
+  CreateVulkanDevice(app->window, &appInfo);// -----------------------------------------------------//window creation//
+  CreateSwapChain();// -----------------------------------------------------------------------------CreateSwapChain()
   // -----------------------------------------------------------------
   // Create render pass
   VkAttachmentDescription attachmentDescriptions{
@@ -1104,14 +1101,12 @@ bool InitVulkan(android_app* app) {
   };
   CALL_VK(vkCreateRenderPass(device.device_, &renderPassCreateInfo, nullptr,&render.renderPass_));
 
-  CreateFrameBuffers(render.renderPass_);
-  CreateTexture();
-  CreateBuffers();
-
+  CreateFrameBuffers(render.renderPass_); // -------------------------------------------------------CreateFrameBuffers
+  CreateTexture(); // ------------------------------------------------------------------------------CreateTexture
+  CreateBuffers(); // ------------------------------------------------------------------------------CreateBuffers
   // Create graphics pipeline
-  CreateGraphicsPipeline();
-
-  CreateDescriptorSet();
+  CreateGraphicsPipeline(); // ---------------------------------------------------------------------CreateGraphicsPipeline
+  CreateDescriptorSet(); // ------------------------------------------------------------------------CreateDescriptorSet
 
   // -----------------------------------------------
   // Create a pool of command buffers to allocate command buffer from
@@ -1183,11 +1178,9 @@ bool InitVulkan(android_app* app) {
     vkCmdBeginRenderPass(render.cmdBuffer_[bufferIndex], &renderPassBeginInfo,
                          VK_SUBPASS_CONTENTS_INLINE);
     // Bind what is necessary to the command buffer
-    vkCmdBindPipeline(render.cmdBuffer_[bufferIndex],
-                      VK_PIPELINE_BIND_POINT_GRAPHICS, gfxPipeline.pipeline_);
-    vkCmdBindDescriptorSets(
-        render.cmdBuffer_[bufferIndex], VK_PIPELINE_BIND_POINT_GRAPHICS,
-        gfxPipeline.layout_, 0, 1, &gfxPipeline.descSet_, 0, nullptr);
+    vkCmdBindPipeline(render.cmdBuffer_[bufferIndex],VK_PIPELINE_BIND_POINT_GRAPHICS, gfxPipeline.pipeline_);
+    vkCmdBindDescriptorSets(render.cmdBuffer_[bufferIndex], VK_PIPELINE_BIND_POINT_GRAPHICS,gfxPipeline.layout_, 0, 1, &gfxPipeline.descSet_, 0, nullptr);
+
     VkDeviceSize offset = 0;
     vkCmdBindVertexBuffers(render.cmdBuffer_[bufferIndex], 0, 1,
                            &buffers.vertexBuf_, &offset);
@@ -1212,8 +1205,7 @@ bool InitVulkan(android_app* app) {
       .pNext = nullptr,
       .flags = 0,
   };
-  CALL_VK(
-      vkCreateFence(device.device_, &fenceCreateInfo, nullptr, &render.fence_));
+  CALL_VK(vkCreateFence(device.device_, &fenceCreateInfo, nullptr, &render.fence_));
 
   // We need to create a semaphore to be able to wait, in the main loop, for our
   // framebuffer to be available for us before drawing.
@@ -1222,8 +1214,7 @@ bool InitVulkan(android_app* app) {
       .pNext = nullptr,
       .flags = 0,
   };
-  CALL_VK(vkCreateSemaphore(device.device_, &semaphoreCreateInfo, nullptr,
-                            &render.semaphore_));
+  CALL_VK(vkCreateSemaphore(device.device_, &semaphoreCreateInfo, nullptr,&render.semaphore_));
 
   device.initialized_ = true;
   return true;
@@ -1264,10 +1255,10 @@ bool VulkanDrawFrame(void) {
   CALL_VK(vkAcquireNextImageKHR(device.device_, swapchain.swapchain_,
                                 UINT64_MAX, render.semaphore_, VK_NULL_HANDLE,
                                 &nextIndex));
+
   CALL_VK(vkResetFences(device.device_, 1, &render.fence_));
 
-  VkPipelineStageFlags waitStageMask =
-      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+  VkPipelineStageFlags waitStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
   VkSubmitInfo submit_info = {.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
                               .pNext = nullptr,
                               .waitSemaphoreCount = 1,

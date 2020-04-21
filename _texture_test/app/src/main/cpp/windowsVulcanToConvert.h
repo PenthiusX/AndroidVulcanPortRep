@@ -25,6 +25,15 @@
 //#include <optional>
 #include <set>
 
+// Vulkan call wrapper
+#define CALL_VK(func)                                                 \
+  if (VK_SUCCESS != (func)) {                                         \
+    __android_log_print(ANDROID_LOG_ERROR, "Tutorial ",               \
+                        "Vulkan error. File[%s], line[%d]", __FILE__, \
+                        __LINE__);                                    \
+    assert(false);                                                    \
+  }
+
 const int WIDTH = 800;
 const int HEIGHT = 600;
 
@@ -750,56 +759,100 @@ private:
             }
         }
     }
-    //--------------------------------------------------------------
+
+
+//--------------------------------------------------------------
     //--------------------------------------------------------------
     //--------------------------------------------------------------
     void drawFrame() {
-        vkWaitForFences(device, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);//Throws error here for some reason!! //Aditya
+//        vkWaitForFences(device, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
+//
+//        uint32_t imageIndex;
+//        vkAcquireNextImageKHR(device, swapChain, UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);//imageIndex is returning a 0
+//
+//        if (imagesInFlight[imageIndex] != VK_NULL_HANDLE) {
+//            vkWaitForFences(device, 1, &imagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);
+//        }
+//        imagesInFlight[imageIndex] = inFlightFences[currentFrame];
+//
+//        VkSubmitInfo submitInfo = {};
+//        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+//
+//        VkSemaphore waitSemaphores[] = { imageAvailableSemaphores[currentFrame] };
+//        VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+//        submitInfo.waitSemaphoreCount = 1;
+//        submitInfo.pWaitSemaphores = waitSemaphores;
+//        submitInfo.pWaitDstStageMask = waitStages;
+//
+//        submitInfo.commandBufferCount = 1;
+//        submitInfo.pCommandBuffers = &commandBuffers[imageIndex];
+//
+//        VkSemaphore signalSemaphores[] = { renderFinishedSemaphores[currentFrame] };
+//        submitInfo.signalSemaphoreCount = 1;
+//        submitInfo.pSignalSemaphores = signalSemaphores;
+//
+//        vkResetFences(device, 1, &inFlightFences[currentFrame]);
+//
+//        if (vkQueueSubmit(graphicsQueue, 1, &submitInfo, inFlightFences[currentFrame]) != VK_SUCCESS) {
+//            throw std::runtime_error("failed to submit draw command buffer!");
+//        }
+//
+//        VkPresentInfoKHR presentInfo = {};
+//        presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+//
+//        presentInfo.waitSemaphoreCount = 1;
+//        presentInfo.pWaitSemaphores = signalSemaphores;
+//
+//        VkSwapchainKHR swapChains[] = { swapChain };
+//        presentInfo.swapchainCount = 1;
+//        presentInfo.pSwapchains = swapChains;
+//
+//        presentInfo.pImageIndices = &imageIndex;
+//
+//        vkQueuePresentKHR(presentQueue, &presentInfo);
+//
+//        currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 
-        uint32_t imageIndex;
-        vkAcquireNextImageKHR(device, swapChain, UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
-
-        if (imagesInFlight[imageIndex] != VK_NULL_HANDLE) {
-            vkWaitForFences(device, 1, &imagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);
+        uint32_t nextIndex;
+        // Get the framebuffer index we should draw in
+        if(vkAcquireNextImageKHR(device, swapChain,UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE,&nextIndex) != VK_SUCCESS){
+            throw std::runtime_error("failed to vkAcquireNextImageKHR!");
         }
-        imagesInFlight[imageIndex] = inFlightFences[currentFrame];
 
-        VkSubmitInfo submitInfo = {};
-        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-
-        VkSemaphore waitSemaphores[] = { imageAvailableSemaphores[currentFrame] };
-        VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-        submitInfo.waitSemaphoreCount = 1;
-        submitInfo.pWaitSemaphores = waitSemaphores;
-        submitInfo.pWaitDstStageMask = waitStages;
-
-        submitInfo.commandBufferCount = 1;
-        submitInfo.pCommandBuffers = &commandBuffers[imageIndex];
-
-        VkSemaphore signalSemaphores[] = { renderFinishedSemaphores[currentFrame] };
-        submitInfo.signalSemaphoreCount = 1;
-        submitInfo.pSignalSemaphores = signalSemaphores;
-
-        vkResetFences(device, 1, &inFlightFences[currentFrame]);
-
-        if (vkQueueSubmit(graphicsQueue, 1, &submitInfo, inFlightFences[currentFrame]) != VK_SUCCESS) {
-            throw std::runtime_error("failed to submit draw command buffer!");
+        if(vkResetFences(device, 1,&inFlightFences[currentFrame]) != VK_SUCCESS){
+            throw std::runtime_error("failed to vkResetFences!");
         }
 
-        VkPresentInfoKHR presentInfo = {};
-        presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+        VkSemaphore waitSemaphores[] = {imageAvailableSemaphores[currentFrame]};
+        VkPipelineStageFlags waitStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        VkSubmitInfo submit_info = {
+                .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+                .pNext = nullptr,
+                .waitSemaphoreCount = 1,
+                .pWaitSemaphores = waitSemaphores,
+                .pWaitDstStageMask = &waitStageMask,
+                .commandBufferCount = 1,
+                .pCommandBuffers = &commandBuffers[nextIndex],
+                .signalSemaphoreCount = 0,
+                .pSignalSemaphores = nullptr};
 
-        presentInfo.waitSemaphoreCount = 1;
-        presentInfo.pWaitSemaphores = signalSemaphores;
+        CALL_VK(vkQueueSubmit(graphicsQueue, 1, &submit_info,inFlightFences[currentFrame]));
+        CALL_VK(vkWaitForFences(device, 1, &inFlightFences[currentFrame], VK_TRUE, 100000000));
 
-        VkSwapchainKHR swapChains[] = { swapChain };
-        presentInfo.swapchainCount = 1;
-        presentInfo.pSwapchains = swapChains;
 
-        presentInfo.pImageIndices = &imageIndex;
-
+        VkResult result;
+        VkSwapchainKHR swapChains[] = {swapChain};
+        VkPresentInfoKHR presentInfo{
+                .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+                .pNext = nullptr,
+                .swapchainCount = 1,
+                .pSwapchains = swapChains,
+                .pImageIndices = &nextIndex,
+                .waitSemaphoreCount = 0,
+                .pWaitSemaphores = nullptr,
+                .pResults = &result,
+        };
         vkQueuePresentKHR(presentQueue, &presentInfo);
-
         currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
     }
 
@@ -838,7 +891,6 @@ private:
                 return availableFormat;
             }
         }
-
         return availableFormats[0];
     }
     //--------------------------------------------------------------
@@ -850,7 +902,6 @@ private:
                 return availablePresentMode;
             }
         }
-
         return VK_PRESENT_MODE_FIFO_KHR;
     }
     //--------------------------------------------------------------
@@ -862,10 +913,8 @@ private:
         }
         else {
             VkExtent2D actualExtent = { WIDTH, HEIGHT };
-
             actualExtent.width = std::max(capabilities.minImageExtent.width, std::min(capabilities.maxImageExtent.width, actualExtent.width));
             actualExtent.height = std::max(capabilities.minImageExtent.height, std::min(capabilities.maxImageExtent.height, actualExtent.height));
-
             return actualExtent;
         }
     }
@@ -892,7 +941,6 @@ private:
             details.presentModes.resize(presentModeCount);
             vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, details.presentModes.data());
         }
-
         return details;
     }
     //--------------------------------------------------------------
@@ -908,7 +956,6 @@ private:
             SwapChainSupportDetails swapChainSupport = querySwapChainSupport(device);
             swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
         }
-
         return indices.isComplete() && extensionsSupported && swapChainAdequate;
     }
     //--------------------------------------------------------------
@@ -926,7 +973,6 @@ private:
         for (const auto& extension : availableExtensions) {
             requiredExtensions.erase(extension.extensionName);
         }
-
         return requiredExtensions.empty();
     }
     //--------------------------------------------------------------
@@ -997,12 +1043,10 @@ private:
                     break;
                 }
             }
-
             if (!layerFound) {
                 return false;
             }
         }
-
         return true;
     }
 
@@ -1033,21 +1077,4 @@ private:
 //--------------------------------------------------------------
 //--------------------------------------------------------------
 //--------------------------------------------------------------
-
-//int main() { // Change!!!! Aditya
-//    HelloTriangleApplication app;
-//
-//    try {
-//        app.run();
-//    }
-//    catch (const std::exception& e) {
-//        std::cerr << e.what() << std::endl;
-//        return EXIT_FAILURE;
-//    }
-//
-//
-//    return EXIT_SUCCESS;
-//}
-
-
 #endif //_TEXTURE_TEST_WINDOWSVULCANTOCONVERT_H
