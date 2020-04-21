@@ -89,15 +89,14 @@ public:
         initWindow(app);
         initVulkan();
 //        mainLoop(); //Change!!! Aditya
-        cleanup();
     }
-
     void render(){
         drawFrame();
     }
-
+    void clean(){
+        cleanup();
+    }
     bool isVulcanReady = false;
-
 
 private:
 //    GLFWwindow* window;
@@ -755,7 +754,7 @@ private:
     //--------------------------------------------------------------
     //--------------------------------------------------------------
     void drawFrame() {
-//        vkWaitForFences(device, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);//Throws error here for some reason!! //Aditya
+        vkWaitForFences(device, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);//Throws error here for some reason!! //Aditya
 
         uint32_t imageIndex;
         vkAcquireNextImageKHR(device, swapChain, UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);

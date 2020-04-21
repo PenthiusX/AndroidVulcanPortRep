@@ -44,11 +44,10 @@ void android_main(struct android_app* app) {
     }
 
     // render if vulkan is ready
-    if (IsVulkanReady()) {
-//        VulkanDrawFrame();
+    if (IsVulkanReady()) {//        VulkanDrawFrame();
     }
-    if(a.isVulcanReady){
-      a.render();
-    }
+    if(a.isVulcanReady){a.render();}
   } while (app->destroyRequested == 0);
+
+  a.clean();
 }
