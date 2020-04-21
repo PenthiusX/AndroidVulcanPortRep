@@ -12,7 +12,7 @@ void handle_cmd(android_app* app, int32_t cmd) {
   switch (cmd) {
     case APP_CMD_INIT_WINDOW:
       // The window is being shown, get it ready.
-      InitVulkan(app);
+//      InitVulkan(app);
       a.run(app);
       break;
     case APP_CMD_TERM_WINDOW:
@@ -46,7 +46,9 @@ void android_main(struct android_app* app) {
     // render if vulkan is ready
     if (IsVulkanReady()) {
 //        VulkanDrawFrame();
-        a.render();
+    }
+    if(a.isVulcanReady){
+      a.render();
     }
   } while (app->destroyRequested == 0);
 }

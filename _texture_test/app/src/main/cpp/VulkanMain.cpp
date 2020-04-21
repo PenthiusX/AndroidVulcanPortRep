@@ -1254,7 +1254,6 @@ void DeleteVulkan() {
 
   device.initialized_ = false;
 }
-
 //--------------------------------------------------------------
 //--------------------------------------------------------------
 //--------------------------------------------------------------
@@ -1279,8 +1278,7 @@ bool VulkanDrawFrame(void) {
                               .signalSemaphoreCount = 0,
                               .pSignalSemaphores = nullptr};
   CALL_VK(vkQueueSubmit(device.queue_, 1, &submit_info, render.fence_));
-  CALL_VK(
-      vkWaitForFences(device.device_, 1, &render.fence_, VK_TRUE, 100000000));
+  CALL_VK(vkWaitForFences(device.device_, 1, &render.fence_, VK_TRUE, 100000000));
 
   LOGI("Drawing frames......");
 

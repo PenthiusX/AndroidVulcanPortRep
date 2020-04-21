@@ -96,6 +96,8 @@ public:
         drawFrame();
     }
 
+    bool isVulcanReady = false;
+
 
 private:
 //    GLFWwindow* window;
@@ -162,9 +164,10 @@ private:
         createRenderPass();//8 Done
         createGraphicsPipeline();//9 Done
         createFramebuffers();//10 Done
-        createCommandPool();//11
-        createCommandBuffers();//12
-        createSyncObjects();//13
+        createCommandPool();//11 Done
+        createCommandBuffers();//12 Done
+        createSyncObjects();//13 Done
+        isVulcanReady = true;//Aditya, flag ready after all Vk stuff is set without errors thrown.
     }
     //--------------------------------------------------------------
     //--------------------------------------------------------------
@@ -736,7 +739,9 @@ private:
 
         VkFenceCreateInfo fenceInfo = {};
         fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-        fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+//        fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+        fenceInfo.pNext = nullptr,
+        fenceInfo.flags = 0;
 
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
             if (vkCreateSemaphore(device, &semaphoreInfo, nullptr, &imageAvailableSemaphores[i]) != VK_SUCCESS ||
@@ -750,7 +755,7 @@ private:
     //--------------------------------------------------------------
     //--------------------------------------------------------------
     void drawFrame() {
-        vkWaitForFences(device, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
+//        vkWaitForFences(device, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);//Throws error here for some reason!! //Aditya
 
         uint32_t imageIndex;
         vkAcquireNextImageKHR(device, swapChain, UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
@@ -799,6 +804,19 @@ private:
         currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
     }
 
+
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
+
+
+    //-------------Pipeline Helper functions below------------------
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
+
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
+    //--------------------------------------------------------------
 //    VkShaderModule createShaderModule(const std::vector<char>& code) { // Change!!!! Aditya
 //        VkShaderModuleCreateInfo createInfo = {};
 //        createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
