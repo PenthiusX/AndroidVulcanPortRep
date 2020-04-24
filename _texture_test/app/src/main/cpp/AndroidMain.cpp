@@ -12,12 +12,13 @@ void handle_cmd(android_app* app, int32_t cmd) {
   switch (cmd) {
     case APP_CMD_INIT_WINDOW:
       // The window is being shown, get it ready.
-//      InitVulkan(app);
-      a.run(app);
+//      InitVulkan(app);//Calls the standard pipeline
+      a.run(app);//Calls the ported pipeline that works on windows
       break;
     case APP_CMD_TERM_WINDOW:
       // The window is being hidden or closed, clean it up.
-      DeleteVulkan();
+//      DeleteVulkan();
+      a.clean();
       break;
     default:
       __android_log_print(ANDROID_LOG_INFO, "Vulkan Tutorials",
@@ -29,7 +30,6 @@ void android_main(struct android_app* app) {
 
   // Set the callback to process system events
   app->onAppCmd = handle_cmd;
-
   // Used to poll the events in the main loop
   int events;
   android_poll_source* source;
@@ -48,6 +48,4 @@ void android_main(struct android_app* app) {
     }
     if(a.isVulcanReady){a.render();}
   } while (app->destroyRequested == 0);
-
-  a.clean();
 }

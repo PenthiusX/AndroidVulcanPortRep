@@ -169,8 +169,8 @@ private:
         createLogicalDevice();//5 Done
         createSwapChain();//6 Done
         createImageViews();//7 Done
-        createRenderPass();//8 Done
-        createGraphicsPipeline();//9 Done
+        createRenderPass();//8 Done https://vulkan-tutorial.com/Drawing_a_triangle/Graphics_pipeline_basics/Render_passes
+        createGraphicsPipeline();//9 Done //https://vulkan-tutorial.com/Drawing_a_triangle/Graphics_pipeline_basics/Fixed_functions
         createFramebuffers();//10 Done
         createCommandPool();//11 Done
         createCommandBuffers();//12 Done
@@ -217,10 +217,8 @@ private:
         if (enableValidationLayers) {
             DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
         }
-
         vkDestroySurfaceKHR(instance, surface, nullptr);
         vkDestroyInstance(instance, nullptr);
-
 //        glfwDestroyWindow(window);// Change!!!! Aditya
 //        glfwTerminate();
     }
@@ -250,7 +248,7 @@ private:
         createInfo.ppEnabledExtensionNames = extensions.data();
 
 
-        if (enableValidationLayers) {
+        if (enableValidationLayers) { //Validation Layers disables by default//Change!!! //Aditya
             VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
             createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
             createInfo.ppEnabledLayerNames = validationLayers.data();
@@ -278,7 +276,7 @@ private:
     //--------------------------------------------------------------
     //--------------------------------------------------------------
     //--------------------------------------------------------------
-    void setupDebugMessenger() {//Redundant is diabled on android causes errors
+    void setupDebugMessenger() {//Redundant is diabled on android causes errors//Change !! Aditya
         if (!enableValidationLayers) return;
         VkDebugUtilsMessengerCreateInfoEXT createInfo;
         populateDebugMessengerCreateInfo(createInfo);
@@ -572,17 +570,17 @@ private:
         viewport.width = (float)swapChainExtent.width;
         viewport.height = (float)swapChainExtent.height;
         viewport.minDepth = 0.0f;
-        viewport.maxDepth = 1.0f;
+        viewport.maxDepth = 1.0f;//Depth Buffer range
 
         VkRect2D scissor = {};
-        scissor.offset = { 0, 0 };
+        scissor.offset = {0,0};
         scissor.extent = swapChainExtent;
 
         VkPipelineViewportStateCreateInfo viewportState = {};
         viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-        viewportState.viewportCount = 1;
+        viewportState.viewportCount = 2;
         viewportState.pViewports = &viewport;
-        viewportState.scissorCount = 1;
+        viewportState.scissorCount = 2;
         viewportState.pScissors = &scissor;
 
         VkPipelineRasterizationStateCreateInfo rasterizer = {};
@@ -642,7 +640,6 @@ private:
         if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) {
             throw std::runtime_error("failed to create graphics pipeline!");
         }
-
 //        vkDestroyShaderModule(device, fragShaderModule, nullptr);
 //        vkDestroyShaderModule(device, vertShaderModule, nullptr);
         vkDestroyShaderModule(device, fragmentShader, nullptr);
@@ -765,94 +762,57 @@ private:
     //--------------------------------------------------------------
     //--------------------------------------------------------------
     void drawFrame() {
+        //For some reason vkWaitForFences() breaks when running first on the Android device
+        //my be an arc related issue , on accessing the Vulcan function at a certain time
+        //need to se if this can be resolved using some flag check. It runs nevertheless Change !!!! Aditya
 //        vkWaitForFences(device, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
-//
-//        uint32_t imageIndex;
-//        vkAcquireNextImageKHR(device, swapChain, UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);//imageIndex is returning a 0
-//
-//        if (imagesInFlight[imageIndex] != VK_NULL_HANDLE) {
-//            vkWaitForFences(device, 1, &imagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);
-//        }
-//        imagesInFlight[imageIndex] = inFlightFences[currentFrame];
-//
-//        VkSubmitInfo submitInfo = {};
-//        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-//
-//        VkSemaphore waitSemaphores[] = { imageAvailableSemaphores[currentFrame] };
-//        VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-//        submitInfo.waitSemaphoreCount = 1;
-//        submitInfo.pWaitSemaphores = waitSemaphores;
-//        submitInfo.pWaitDstStageMask = waitStages;
-//
-//        submitInfo.commandBufferCount = 1;
-//        submitInfo.pCommandBuffers = &commandBuffers[imageIndex];
-//
-//        VkSemaphore signalSemaphores[] = { renderFinishedSemaphores[currentFrame] };
-//        submitInfo.signalSemaphoreCount = 1;
-//        submitInfo.pSignalSemaphores = signalSemaphores;
-//
-//        vkResetFences(device, 1, &inFlightFences[currentFrame]);
-//
-//        if (vkQueueSubmit(graphicsQueue, 1, &submitInfo, inFlightFences[currentFrame]) != VK_SUCCESS) {
-//            throw std::runtime_error("failed to submit draw command buffer!");
-//        }
-//
-//        VkPresentInfoKHR presentInfo = {};
-//        presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-//
-//        presentInfo.waitSemaphoreCount = 1;
-//        presentInfo.pWaitSemaphores = signalSemaphores;
-//
-//        VkSwapchainKHR swapChains[] = { swapChain };
-//        presentInfo.swapchainCount = 1;
-//        presentInfo.pSwapchains = swapChains;
-//
-//        presentInfo.pImageIndices = &imageIndex;
-//
-//        vkQueuePresentKHR(presentQueue, &presentInfo);
-//
-//        currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 
-        uint32_t nextIndex;
-        // Get the framebuffer index we should draw in
-        if(vkAcquireNextImageKHR(device, swapChain,UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE,&nextIndex) != VK_SUCCESS){
+        uint32_t imageIndex;
+        if(vkAcquireNextImageKHR(device, swapChain,UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE,&imageIndex) != VK_SUCCESS){
             throw std::runtime_error("failed to vkAcquireNextImageKHR!");
         }
 
-        if(vkResetFences(device, 1,&inFlightFences[currentFrame]) != VK_SUCCESS){
-            throw std::runtime_error("failed to vkResetFences!");
+        if (imagesInFlight[imageIndex] != VK_NULL_HANDLE) {
+            vkWaitForFences(device, 1, &imagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);
+        }
+        imagesInFlight[imageIndex] = inFlightFences[currentFrame];
+
+        VkSubmitInfo submitInfo = {};
+        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+        VkSemaphore waitSemaphores[] = { imageAvailableSemaphores[currentFrame] };
+        VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+        submitInfo.waitSemaphoreCount = 1;
+        submitInfo.pWaitSemaphores = waitSemaphores;
+        submitInfo.pWaitDstStageMask = waitStages;
+
+        submitInfo.commandBufferCount = 1;
+        submitInfo.pCommandBuffers = &commandBuffers[imageIndex];
+
+        VkSemaphore signalSemaphores[] = { renderFinishedSemaphores[currentFrame] };
+        submitInfo.signalSemaphoreCount = 1;
+        submitInfo.pSignalSemaphores = signalSemaphores;
+
+        vkResetFences(device, 1, &inFlightFences[currentFrame]);
+
+        if (vkQueueSubmit(graphicsQueue, 1, &submitInfo, inFlightFences[currentFrame]) != VK_SUCCESS) {
+            throw std::runtime_error("failed to submit draw command buffer!");
         }
 
-        VkSemaphore waitSemaphores[] = {imageAvailableSemaphores[currentFrame]};
-        VkPipelineStageFlags waitStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-        VkSubmitInfo submit_info = {
-                .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
-                .pNext = nullptr,
-                .waitSemaphoreCount = 1,
-                .pWaitSemaphores = waitSemaphores,
-                .pWaitDstStageMask = &waitStageMask,
-                .commandBufferCount = 1,
-                .pCommandBuffers = &commandBuffers[nextIndex],
-                .signalSemaphoreCount = 0,
-                .pSignalSemaphores = nullptr};
+        VkPresentInfoKHR presentInfo = {};
+        presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 
-        CALL_VK(vkQueueSubmit(graphicsQueue, 1, &submit_info,inFlightFences[currentFrame]));
-        CALL_VK(vkWaitForFences(device, 1, &inFlightFences[currentFrame], VK_TRUE, 100000000));
+        presentInfo.waitSemaphoreCount = 1;
+        presentInfo.pWaitSemaphores = signalSemaphores;
 
+        VkSwapchainKHR swapChains[] = { swapChain };
+        presentInfo.swapchainCount = 1;
+        presentInfo.pSwapchains = swapChains;
 
-        VkResult result;
-        VkSwapchainKHR swapChains[] = {swapChain};
-        VkPresentInfoKHR presentInfo{
-                .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
-                .pNext = nullptr,
-                .swapchainCount = 1,
-                .pSwapchains = swapChains,
-                .pImageIndices = &nextIndex,
-                .waitSemaphoreCount = 0,
-                .pWaitSemaphores = nullptr,
-                .pResults = &result,
-        };
+        presentInfo.pImageIndices = &imageIndex;
+
         vkQueuePresentKHR(presentQueue, &presentInfo);
+
         currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
     }
 
