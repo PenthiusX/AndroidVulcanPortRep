@@ -17,9 +17,10 @@ set(GLM_DIR ${REPO_ROOT_DIR}/vk_Meshlet/glm)
 set(GLMGLM_DIR ${REPO_ROOT_DIR}/vk_Meshlet/glm/glm)
 
 add_library(vktuts SHARED
-        ${SRC_DIR}/VulkanMain.cpp
+#        ${SRC_DIR}/VulkanMain.cpp
         ${SRC_DIR}/AndroidMain.cpp
         ${SRC_DIR}/CreateShaderModule.cpp
+        ${SRC_DIR}/VulcanRenderer.cpp
         ${COMMON_DIR}/vulkan_wrapper/vulkan_wrapper.cpp)
 
 
