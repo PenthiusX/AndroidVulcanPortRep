@@ -65,7 +65,7 @@ void VulcanRenderer::clean(){
 }
 
 //private:
-//    void VulcanRenderer::initWindow() {// Change!!!! Aditya
+//    void VulcanRenderer::initWindow() {// Change, Keeping this for refrence!!!! Aditya
 //        glfwInit();
 //        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 //        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
@@ -102,7 +102,7 @@ void VulcanRenderer::setupVulcan()
     //--------------------------------------------------------------
     //--------------------------------------------------------------
     //--------------------------------------------------------------
-//    void mainLoop() {// Change!!!! Aditya
+//    void mainLoop() {// Change, Keeping this for refrence!!!! Aditya
 //        while (!glfwWindowShouldClose(window)) {
 //            glfwPollEvents();
 //            drawFrame();
@@ -138,7 +138,7 @@ void VulcanRenderer::cleanup() {
 
     vkDestroySurfaceKHR(instance, surface, nullptr);
     vkDestroyInstance(instance, nullptr);
-//        glfwDestroyWindow(window);// Change!!!! Aditya
+//        glfwDestroyWindow(window);// Change, Keeping this for refrence!!!! Aditya
 //        glfwTerminate();
 }
     //--------------------------------------------------------------
@@ -173,11 +173,11 @@ void VulcanRenderer::createInstance() {
     //--------------------------------------------------------------
     //--------------------------------------------------------------
     //--------------------------------------------------------------
-void VulcanRenderer::createSurface() {// Change!!!! Aditya
+void VulcanRenderer::createSurface() {// Change, Keeping this for refrence!!!! Aditya
 //        if (glfwCreateWindowSurface(instance, window, nullptr, &surface) != VK_SUCCESS) {//points of divergence//windowing
 //            throw std::runtime_error("failed to create window surface!");
 //        }
-    //-----------------------Change!!! Aditya----------------------------
+    //-----------------------// Change, Keeping this for refrence!!!! Aditya----------------------------
     VkAndroidSurfaceCreateInfoKHR androidSurfaceInfo{
             .sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR,
             .pNext = nullptr,
@@ -415,7 +415,7 @@ void VulcanRenderer::createGraphicsPipeline() {
                     .pName = "main",
             }};
 
-    // Change!!!! Aditya
+        // Change, Keeping this for refrence!!!! Aditya
 //        VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
 //        VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);
 //
@@ -643,7 +643,7 @@ void VulcanRenderer::createSyncObjects() {
 void VulcanRenderer::drawFrame() {
     //For some reason vkWaitForFences() breaks when running first on the Android device
     //my be an arc related issue , on accessing the Vulcan function at a certain time
-    //need to se if this can be resolved using some flag check. It runs nevertheless Change !!!! Aditya
+    //need to se if this can be resolved using some flag check. It runs nevertheless // Change, Keeping this for refrence!!!! Aditya
 //        vkWaitForFences(device, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 
     uint32_t imageIndex;
@@ -708,7 +708,7 @@ void VulcanRenderer::drawFrame() {
     //--------------------------------------------------------------
     //--------------------------------------------------------------
     //--------------------------------------------------------------
-//    VkShaderModule createShaderModule(const std::vector<char>& code) { // Change!!!! Aditya
+//    VkShaderModule createShaderModule(const std::vector<char>& code) { // Change, Keeping this for refrence!!!! Aditya
 //        VkShaderModuleCreateInfo createInfo = {};
 //        createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
 //        createInfo.codeSize = code.size();
@@ -849,7 +849,7 @@ QueueFamilyIndices VulcanRenderer::findQueueFamilies(VkPhysicalDevice device) {
     //--------------------------------------------------------------
     //--------------------------------------------------------------
 std::vector<const char*> VulcanRenderer::getRequiredExtensions() {
-// Change!!!! Aditya
+// Change, Keeping this for refrence!!!! Aditya
 //        uint32_t glfwExtensionCount = 0;
 //        const char** glfwExtensions;
 //        glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);

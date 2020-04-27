@@ -23,14 +23,6 @@
 #include "CreateShaderModule.h"
 #include <glm/glm.hpp>
 
-
-//#ifdef NDEBUG
-//const bool enableValidationLayers = false;
-//#else
-//const bool enableValidationLayers = false;
-//#endif
-
-
 struct QueueFamilyIndices {
     uint32_t graphicsFamily;
     uint32_t presentFamily;
@@ -58,16 +50,14 @@ public:
     void run(android_app* app);
     void clean();
     void render();
-
     bool isVulcanReady = false;
 
 private:
-
     const uint32_t WIDTH = 800;
     const uint32_t HEIGHT = 600;
     const int MAX_FRAMES_IN_FLIGHT = 2;
 
-    //    GLFWwindow* window;
+    //GLFWwindow* window; Replaced with Android App window
     VkSurfaceKHR surface;
     VkInstance instance;
     VkDebugUtilsMessengerEXT debugMessenger;
@@ -100,13 +90,6 @@ private:
 
     android_app* androidAppCtx = nullptr;
 
-    void initWindow(android_app* app);
-    void initVulkan();
-    void setupVulcan();
-
-    void cleanup();
-
-
     std::vector<char> readFile(const std::string &filename);
     bool checkValidationLayerSupport();
     std::vector<const char *> getRequiredExtensions();
@@ -118,7 +101,9 @@ private:
     VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR> &availablePresentModes);
     VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR> &availableFormats);
 
-    void setupDebugMessenger();
+    void initWindow(android_app* app);
+    void setupVulcan();
+    void cleanup();
 
     void createInstance();
     void createSurface();
@@ -132,6 +117,7 @@ private:
     void createCommandPool();
     void createCommandBuffers();
     void createSyncObjects();
+
     void drawFrame();
 };
 
