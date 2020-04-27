@@ -1,23 +1,19 @@
 #include <android/log.h>
 #include <android_native_app_glue.h>
-#include "VulkanMain.hpp"
 #include <glm/glm.hpp>
 
-#include "windowsVulcanToConvert.h"
+#include "VulcanRenderer.h"
 
-HelloTriangleApplication a;
+VulcanRenderer a;
 
 // Process the next main command.
 void handle_cmd(android_app* app, int32_t cmd) {
   switch (cmd) {
     case APP_CMD_INIT_WINDOW:
       // The window is being shown, get it ready.
-//      InitVulkan(app);//Calls the standard pipeline
       a.run(app);//Calls the ported pipeline that works on windows
       break;
     case APP_CMD_TERM_WINDOW:
-      // The window is being hidden or closed, clean it up.
-//      DeleteVulkan();
       a.clean();
       break;
     default:
@@ -27,7 +23,6 @@ void handle_cmd(android_app* app, int32_t cmd) {
 }
 
 void android_main(struct android_app* app) {
-
   // Set the callback to process system events
   app->onAppCmd = handle_cmd;
   // Used to poll the events in the main loop
@@ -36,16 +31,12 @@ void android_main(struct android_app* app) {
 
   // Main loop
   do {
-    if (ALooper_pollAll(IsVulkanReady() ? 1 : 0, nullptr,
-                        &events, (void**)&source) >= 0) {
-      if (source != NULL) {
-          source->process(app, source);
+      if (ALooper_pollAll(a.isVulcanReady ? 1 : 0, nullptr,
+                          &events, (void**)&source) >= 0) {
+          if (source != NULL) {
+              source->process(app, source);
+          }
       }
-    }
-
-    // render if vulkan is ready
-    if (IsVulkanReady()) {//        VulkanDrawFrame();
-    }
     if(a.isVulcanReady){a.render();}
   } while (app->destroyRequested == 0);
 }
