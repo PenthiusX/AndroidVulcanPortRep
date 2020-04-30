@@ -19,7 +19,7 @@ shaderc_shader_kind getShadercShaderType(VkShaderStageFlagBits type) {
       return shaderc_glsl_compute_shader;
     default:
       __android_log_assert("invalid VKShaderStageFlagBits",
-                           "tutorial06_texture", "type = %08x", type);
+                           "Vulcan Texture test", "type = %08x", type);
   }
   return static_cast<shaderc_shader_kind>(-1);
 }

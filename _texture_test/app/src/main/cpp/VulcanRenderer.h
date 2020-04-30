@@ -53,6 +53,7 @@ public:
     bool isVulcanReady = false;
 
 private:
+
     const uint32_t WIDTH = 800;
     const uint32_t HEIGHT = 600;
     const int MAX_FRAMES_IN_FLIGHT = 2;
@@ -111,8 +112,8 @@ private:
     void createLogicalDevice();
     void createSwapChain();
     void createImageViews();
-    void createRenderPass();
-    void createGraphicsPipeline();
+    void createRenderPass();//https://vulkan-tutorial.com/Drawing_a_triangle/Graphics_pipeline_basics/Render_passes
+    void createGraphicsPipeline();//https://vulkan-tutorial.com/Drawing_a_triangle/Graphics_pipeline_basics/Fixed_functions
     void createFramebuffers();
     void createCommandPool();
     void createCommandBuffers();

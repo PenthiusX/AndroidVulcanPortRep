@@ -2,6 +2,8 @@
 // Created by amattoo on 4/27/2020.
 //
 
+#include <array>
+
 #include "VulcanRenderer.h"
 
 
@@ -13,17 +15,55 @@
                         __LINE__);                                    \
     assert(false);                                                    \
   }
+
+//https://vulkan-tutorial.com/Vertex_buffers/Vertex_input_description
+struct Vertex {
+    glm::vec2 pos;
+    glm::vec3 color;
+
+    static VkVertexInputBindingDescription getBindingDescription(){
+        VkVertexInputBindingDescription bindingDescription{};
+        bindingDescription.binding = 0;
+        bindingDescription.stride = sizeof(Vertex);
+        bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;//instancing parameter is here
+        return bindingDescription;
+    }
+
+    static std::array<VkVertexInputAttributeDescription, 2> getAttributeDescriptions() {
+        std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions{};
+
+        //Vertex attribute settings
+        attributeDescriptions[0].binding = 0;
+        attributeDescriptions[0].location = 0;//the attribute location in the shader!!
+        attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
+        attributeDescriptions[0].offset = offsetof(Vertex, pos);
+
+        //Color attribute settings
+        attributeDescriptions[1].binding = 0;
+        attributeDescriptions[1].location = 1;
+        attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+        attributeDescriptions[1].offset = offsetof(Vertex, color);
+
+        return attributeDescriptions;
+    }
+};
+const std::vector<Vertex> vertices = {
+        {{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+        {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
+        {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
+};
+
+
 VulcanRenderer::VulcanRenderer() {}
 VulcanRenderer::~VulcanRenderer() {}
-
 
 const std::vector<const char*> validationLayers = {
         "VK_LAYER_KHRONOS_validation"
 };
-
 std::vector<const char*> deviceExtensions = {
         VK_KHR_SWAPCHAIN_EXTENSION_NAME
 };
+
 
 //--------------------------------------------------------------
 //--------------------------------------------------------------
@@ -49,8 +89,6 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT
 //--------------------------------------------------------------
 //-------------------------------------------------------------
 //public:
-
-
 
 void VulcanRenderer::run(android_app *app) {
     this->initWindow(app);
@@ -385,9 +423,11 @@ void VulcanRenderer::createRenderPass() {
     //--------------------------------------------------------------
     //--------------------------------------------------------------
 void VulcanRenderer::createGraphicsPipeline() {
-//        auto vertShaderCode = readFile("shaders/vert.spv");//point of divergence//Shader compilation
+//        auto vertShaderCode = readFile("shaders/vert.spv");//Change, Keeping this for refrence!!!! Aditya
 //        auto fragShaderCode = readFile("shaders/frag.spv");
     VkShaderModule vertexShader, fragmentShader;
+    //The function in the Buildshader module class uses the cdep lib to buld the .vert file into
+    // a .spv wich is precompiled SPIRV shader that vulcan uses
     buildShaderFromFile(androidAppCtx, "shaders/09_shader_base.vert",
                         VK_SHADER_STAGE_VERTEX_BIT, device,
                         &vertexShader);
@@ -416,22 +456,24 @@ void VulcanRenderer::createGraphicsPipeline() {
             }};
 
         // Change, Keeping this for refrence!!!! Aditya
-//        VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
-//        VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);
-//
-//        VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
-//        vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-//        vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-//        vertShaderStageInfo.module = vertShaderModule;
-//        vertShaderStageInfo.pName = "main";
-//
-//        VkPipelineShaderStageCreateInfo fragShaderStageInfo = {};
-//        fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-//        fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-//        fragShaderStageInfo.module = fragShaderModule;
-//        fragShaderStageInfo.pName = "main";
-//
-//        VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
+        /*
+        VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
+        VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);
+
+        VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
+        vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+        vertShaderStageInfo.module = vertShaderModule;
+        vertShaderStageInfo.pName = "main";
+
+        VkPipelineShaderStageCreateInfo fragShaderStageInfo = {};
+        fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+        fragShaderStageInfo.module = fragShaderModule;
+        fragShaderStageInfo.pName = "main";
+
+        VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
+        */
 
     VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
     vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -519,8 +561,7 @@ void VulcanRenderer::createGraphicsPipeline() {
     if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) {
         throw std::runtime_error("failed to create graphics pipeline!");
     }
-//        vkDestroyShaderModule(device, fragShaderModule, nullptr);
-//        vkDestroyShaderModule(device, vertShaderModule, nullptr);
+
     vkDestroyShaderModule(device, fragmentShader, nullptr);
     vkDestroyShaderModule(device, vertexShader, nullptr);
 }

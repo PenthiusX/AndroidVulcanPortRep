@@ -4,7 +4,7 @@ android {
     compileSdkVersion  25
 
     defaultConfig {
-        applicationId "com.vulkan.tutorials.six"
+        applicationId "com.vulkan.texture_test"
         minSdkVersion 24
         targetSdkVersion 24
         versionCode 1

@@ -17,7 +17,7 @@ void handle_cmd(android_app* app, int32_t cmd) {
       a.clean();
       break;
     default:
-      __android_log_print(ANDROID_LOG_INFO, "Vulkan Tutorials",
+      __android_log_print(ANDROID_LOG_INFO, "Vulkan Test",
                           "event not handled: %d", cmd);
   }
 }
